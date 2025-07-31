@@ -12,6 +12,7 @@
     "url-toolkit": "^2.2.0"
   },
   "scripts": {
-    "watch": "nodemon -e mjs,pug ./bin/generate-html.mjs"
+    "start": "node --max-http-header-size=80000 ./bin/generate-html.mjs",
+    "watch": "nodemon -e mjs,pug --exec 'node --max-http-header-size=80000 ./bin/generate-html.mjs'"
   }
 }

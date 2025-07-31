@@ -24,9 +24,15 @@ import html2text from 'html2plaintext'
 			story.image = false
 		} else {
 			story.domain = psl.parse(new URL(story.url).hostname).domain
-			const info = await page_info(story.url)
-			story.paragraph = info.paragraph
-			story.image = info.image
+			try {
+				const info = await page_info(story.url)
+				story.paragraph = info.paragraph
+				story.image = info.image
+			} catch (err) {
+				console.error(err)
+				story.paragraph = ''
+				story.image = false
+			}
 		}
 		stories.push(story)
 	}
@@ -45,11 +51,10 @@ import html2text from 'html2plaintext'
 	await fs.writeFile('index.html', pug.renderFile('index.pug', {
 		stories,
 		jobs,
-		date: new Date(1000*Math.max(...stories.map(s => s.time))).toLocaleString('en-US', {
+		date: (stories.length > 0 ? new Date(1000*Math.max(...stories.map(s => s.time))) : new Date()).toLocaleString('en-US', {
 			timeZone: 'UTC',
 			dateStyle: 'full',
 			timeStyle: 'short',
-			timeZoneName: 'short',
 		}),
 	}))
 })().then(null, err => {throw err})
